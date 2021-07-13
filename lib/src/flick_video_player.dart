@@ -1,3 +1,4 @@
+import 'package:easy_debounce/easy_debounce.dart';
 import 'package:universal_html/html.dart';
 import 'package:flick_video_player/flick_video_player.dart';
 import 'package:flutter/foundation.dart';
@@ -72,7 +73,13 @@ class _FlickVideoPlayerState extends State<FlickVideoPlayer> {
   void initState() {
     flickManager = widget.flickManager;
     flickManager.registerContext(context);
-    flickManager.flickControlManager!.addListener(listener);
+    flickManager.flickControlManager!.addListener(() {
+      EasyDebounce.debounce('my-debouncer-custom', Duration(milliseconds: 200),
+          () {
+        listener();
+      });
+    });
+    flickManager.flickControlManager!.addScreenSwitchListener();
     _setSystemUIOverlays();
     _setPreferredOrientation();
 
@@ -93,15 +100,29 @@ class _FlickVideoPlayerState extends State<FlickVideoPlayer> {
   // Listener on [FlickControlManager],
   // Pushes the full-screen if [FlickControlManager] is changed to full-screen.
   void listener() async {
-    if (flickManager.flickControlManager!.isFullscreen && !_isFullscreen) {
+    print(
+        'inside listener isFull: ${flickManager.flickControlManager!.isFullscreen}, flickManager.flickControlManager!.isResized: ${flickManager.flickControlManager!.isResized}');
+    // if (flickManager.flickControlManager!.isFullscreen == true &&
+    //     flickManager.flickControlManager!.isResized == false) {
+    //   _switchToFullscreen();
+    //   return;
+    // }
+    // if (flickManager.flickControlManager!.isFullscreen !=
+    //     flickManager.flickControlManager!.isResized) {
+    //   _switchToFullscreen();
+    //   return;
+    // }
+    if (flickManager.flickControlManager!.isFullscreen) {
       _switchToFullscreen();
-    } else if (_isFullscreen &&
-        !flickManager.flickControlManager!.isFullscreen) {
+    } else if (!flickManager.flickControlManager!.isFullscreen) {
+      print('exit full screen');
       _exitFullscreen();
     }
   }
 
   _switchToFullscreen() {
+    print('switch to full screen');
+
     /// Disable previous wakelock setting.
     Wakelock.disable();
 
@@ -116,17 +137,17 @@ class _FlickVideoPlayerState extends State<FlickVideoPlayer> {
       document.documentElement?.requestFullscreen();
     }
 
-    _overlayEntry = OverlayEntry(builder: (context) {
-      return Scaffold(
-        body: FlickManagerBuilder(
-          flickManager: flickManager,
-          child: widget.flickVideoWithControlsFullscreen ??
-              widget.flickVideoWithControls,
-        ),
-      );
-    });
+    // _overlayEntry = OverlayEntry(builder: (context) {
+    //   return Scaffold(
+    //     body: FlickManagerBuilder(
+    //       flickManager: flickManager,
+    //       child: widget.flickVideoWithControlsFullscreen ??
+    //           widget.flickVideoWithControls,
+    //     ),
+    //   );
+    // });
 
-    Overlay.of(context)!.insert(_overlayEntry!);
+    // Overlay.of(context)!.insert(_overlayEntry!);
   }
 
   _exitFullscreen() {

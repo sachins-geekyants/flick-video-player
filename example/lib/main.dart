@@ -59,46 +59,49 @@ class _ExamplesState extends State<Examples> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: <Widget>[
-        Container(
-          child: samples[selectedIndex]['widget'],
-        ),
-        Container(
-          height: 80,
-          decoration: BoxDecoration(
-            color: Colors.white,
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Container(
+            child: samples[selectedIndex]['widget'],
           ),
-          child: ListView(
-              scrollDirection: Axis.horizontal,
-              children: samples.asMap().keys.map((index) {
-                return Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    onTap: () {
-                      changeSample(index);
-                    },
-                    child: Center(
-                      child: Container(
-                        padding: EdgeInsets.all(20),
-                        child: Text(
-                          samples.asMap()[index]?['name'],
-                          style: TextStyle(
-                            color: index == selectedIndex
-                                ? Color.fromRGBO(100, 109, 236, 1)
-                                : Color.fromRGBO(173, 176, 183, 1),
-                            fontWeight:
-                                index == selectedIndex ? FontWeight.bold : null,
+          Container(
+            height: 80,
+            decoration: BoxDecoration(
+              color: Colors.white,
+            ),
+            child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: samples.asMap().keys.map((index) {
+                  return Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: () {
+                        changeSample(index);
+                      },
+                      child: Center(
+                        child: Container(
+                          padding: EdgeInsets.all(20),
+                          child: Text(
+                            samples.asMap()[index]?['name'],
+                            style: TextStyle(
+                              color: index == selectedIndex
+                                  ? Color.fromRGBO(100, 109, 236, 1)
+                                  : Color.fromRGBO(173, 176, 183, 1),
+                              fontWeight: index == selectedIndex
+                                  ? FontWeight.bold
+                                  : null,
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                );
-              }).toList()),
-        ),
-      ],
+                  );
+                }).toList()),
+          ),
+        ],
+      ),
     );
   }
 }

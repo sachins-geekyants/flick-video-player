@@ -15,9 +15,16 @@ class FlickControlManager extends ChangeNotifier {
   bool _isMute = false;
   bool _isFullscreen = false;
   bool _isAutoPause = false;
+  bool _isResized = false;
 
   /// Is player in full-screen.
   bool get isFullscreen => _isFullscreen;
+
+  bool get isResized => _isResized;
+
+  updateResized(bool val) {
+    _isResized = val;
+  }
 
   /// Is player mute.
   bool get isMute => _isMute;
@@ -28,9 +35,23 @@ class FlickControlManager extends ChangeNotifier {
 
   /// Enter full-screen.
   void enterFullscreen() {
+    print('enterning full screen...');
     _isFullscreen = true;
+    _isResized = true;
     _flickManager._handleToggleFullscreen();
     _notify();
+  }
+
+  void addScreenSwitchListener() {
+    document.documentElement?.onFullscreenChange.listen((event) {
+      EasyDebounce.debounce('my-debouncer', Duration(milliseconds: 500), () {
+        // if (!_isFullscreen) {
+        //   _isResized = true;
+        // }
+        _isResized = true;
+        print('_isResized : $_isResized');
+      });
+    });
   }
 
   /// Exit full-screen.
@@ -45,12 +66,18 @@ class FlickControlManager extends ChangeNotifier {
       });
     }
     _isFullscreen = false;
+    _isResized = false;
     _flickManager._handleToggleFullscreen();
     _notify();
   }
 
   /// Toggle full-screen.
   void toggleFullscreen() {
+    // if (_isFullscreen == true && !_isResized) {
+    //   enterFullscreen();
+    //   return;
+    // }
+
     if (_isFullscreen) {
       exitFullscreen();
     } else {

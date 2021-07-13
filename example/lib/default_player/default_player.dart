@@ -18,7 +18,7 @@ class _DefaultPlayerState extends State<DefaultPlayer> {
     super.initState();
     flickManager = FlickManager(
       videoPlayerController:
-          VideoPlayerController.network(mockData["items"][0]["trailer_url"]),
+          VideoPlayerController.network(mockData["items"][1]["trailer_url"]),
     );
   }
 

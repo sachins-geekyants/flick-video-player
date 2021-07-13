@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
@@ -18,17 +19,27 @@ class FlickNativeVideoPlayer extends StatelessWidget {
   Widget build(BuildContext context) {
     VideoPlayer videoPlayer = VideoPlayer(videoPlayerController!);
 
-    double? videoHeight = videoPlayerController?.value.size.height;
-    double? videoWidth = videoPlayerController?.value.size.width;
+    double? videoHeight = kIsWeb
+        ? MediaQuery.of(context).size.height
+        : videoPlayerController?.value.size.height;
+    double? videoWidth = kIsWeb
+        ? MediaQuery.of(context).size.width
+        : videoPlayerController?.value.size.width;
 
     return LayoutBuilder(
       builder: (context, size) {
-        double aspectRatio = (size.maxHeight == double.infinity ||
-                size.maxWidth == double.infinity)
-            ? (videoPlayerController?.value.isInitialized == true
-                ? videoPlayerController?.value.aspectRatio
-                : aspectRatioWhenLoading!)!
-            : size.maxWidth / size.maxHeight;
+        double aspectRatio;
+        if (kIsWeb) {
+          aspectRatio = MediaQuery.of(context).size.width /
+              MediaQuery.of(context).size.height;
+        } else {
+          aspectRatio = (size.maxHeight == double.infinity ||
+                  size.maxWidth == double.infinity)
+              ? (videoPlayerController?.value.isInitialized == true
+                  ? videoPlayerController?.value.aspectRatio
+                  : aspectRatioWhenLoading!)!
+              : size.maxWidth / size.maxHeight;
+        }
 
         return AspectRatio(
           aspectRatio: aspectRatio,
